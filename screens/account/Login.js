@@ -10,7 +10,7 @@ export default function Login() {
                 source={require("../../assets/restaurant-logo.png")}
                 resizeMode="contain"
                 style={styles.image}
-                />
+            />
             <View style={styles.container}>
                 <Text>Login Form</Text>
                 <CreateAccount/>
@@ -22,7 +22,7 @@ export default function Login() {
 
 function CreateAccount(props) {
     const navigation = useNavigation()
-    
+
     return(
         <Text 
             style={styles.register}

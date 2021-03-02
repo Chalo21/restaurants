@@ -1,12 +1,58 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Image } from 'react-native'
+import { Button } from 'react-native-elements'
 
 export default function UserGuest() {
     return (
-        <View>
-            <Text>UserGuest...</Text>
-        </View>
+        <ScrollView
+            centerContent
+            style={styles.viewBody}
+        >
+            <Image
+                source={require("../../assets/restaurant-logo.png")}
+                resizeMode="contain"
+                style={styles.image}
+            />
+            <Text style={styles.title}>Consulta tu perfil en Restaurants</Text>
+            <Text style={styles.description}>
+                ¿Cómo describirías tu mejor restaurante? Busca y visualiza los mejores restaurantes de una forma
+                sencilla, vota cuál te ha gustado más y comenta cómo ha sido tu experiencia.
+            </Text>
+            <Button 
+                buttonStyle={styles.button}
+                title="Ver tu perfil"
+                onPress={() => console.log("Click!!!")}
+            />
+        </ScrollView>
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    viewBody : {
+        marginHorizontal: 30
+    },
+    
+    image : {
+        height: 300,
+        width: "100%",
+        marginBottom: 10,
+        textAlign: "center"
+    },
+
+    title : {
+        fontWeight: "bold",
+        fontSize:19,
+        marginVertical:10,
+        textAlign: "center"
+    },
+
+    description : {
+        textAlign: "justify",
+        marginBottom: 20,
+        color:"#043444"
+    },
+
+    button : {
+        backgroundColor: "#6d1a1a"
+    }
+})

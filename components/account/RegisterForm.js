@@ -4,12 +4,22 @@ import { Button, Icon, Input } from 'react-native-elements'
 
 export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false)
+    const [formData, setFormData] = useState(defaultFormValues())
+
+    
+    const onChange = (e, type) => {
+        setFormData({...formData, [type]: e.nativeEvent.text})
+    }
+    
+    
     return (
         <View style={styles.form}>
             <Input
                 containerStyle={styles.input}
                 placeholder= "Ingresa tu email..."
-            />
+                onChange={(e) => onChange(e, "email")}
+                keyboardType="email-address"
+                />
             <Input
                 containerStyle={styles.input}
                 placeholder= "Ingresa tu contraseña..."
@@ -17,12 +27,13 @@ export default function RegisterForm() {
                 secureTextEntry={!showPassword}
                 rightIcon={
                     <Icon
-                        type="material-community"
-                        name={showPassword ? "eye-off-outline" : "eye-outline"}
-                        iconStyle={styles.icon}
-                        onPress={() => setShowPassword(!showPassword)}
+                    type="material-community"
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    iconStyle={styles.icon}
+                    onPress={() => setShowPassword(!showPassword)}
                     />
                 }
+                onChange={(e) => onChange(e, "password")}
                 />
             <Input
                 containerStyle={styles.input}
@@ -31,20 +42,26 @@ export default function RegisterForm() {
                 secureTextEntry={!showPassword}
                 rightIcon={
                     <Icon
-                        type="material-community"
-                        name={showPassword ? "eye-off-outline" : "eye-outline"}
-                        iconStyle={styles.icon}
-                        onPress={() => setShowPassword(!showPassword)}
+                    type="material-community"
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    iconStyle={styles.icon}
+                    onPress={() => setShowPassword(!showPassword)}
                     />
                 }
+                onChange={(e) => onChange(e, "confirm")}
                 />
             <Button
                 title="Registrar Nuevo Usuario"
                 containerStyle={styles.btnContainer}
                 buttonStyle={styles.btn}
-            />
+                onPress={() => console.log(formData)}
+                />
         </View>
     )
+}
+
+const defaultFormValues = () => {
+    return { email: "", password: "", confirm: ""}
 }
 
 const styles = StyleSheet.create({

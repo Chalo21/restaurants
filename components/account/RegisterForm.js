@@ -1,6 +1,6 @@
 import { size } from 'lodash'
 import React, { useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 

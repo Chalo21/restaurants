@@ -9,7 +9,6 @@ export default function InfoUser({ user, setLoading, setLoadingText }) {
     const [photoUrl, setPhotoUrl] = useState(user.photoURL)
     const changePhoto = async() =>{
         const result = await loadImageFromGallery([1, 1])
-        console.log(result)
         if(!result.status) {
             return
         }

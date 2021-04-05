@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { isEmpty, size } from 'lodash'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Button, Icon, Input } from 'react-native-elements'
 
-import { reauthenticate, updateEmail, updateProfile } from '../../utils/actions'
-import { validateEmail } from '../../utils/helpers'
+import { reauthenticate, updatePassword  } from '../../utils/actions'
 
 
 export default function ChangePasswordForm({setShowModal, toastRef}) {
@@ -21,25 +20,24 @@ export default function ChangePasswordForm({setShowModal, toastRef}) {
         if(!validateForm()){
             return
         }
-        // setLoading(true)
-        // const resultReauthenticate = await reauthenticate(password)
-        // if(!resultReauthenticate.statusResponse){
-        //     setErrorPassword("Contraseña incorrecta.")
-        //     setLoading(false)
-        //     return
-        // }
+        setLoading(true)
+        const resultReauthenticate = await reauthenticate(currentPassword)
+        if(!resultReauthenticate.statusResponse){
+            setErrorCurrentPassword("Contraseña incorrecta.")
+            setLoading(false)
+            return
+        }
         
-        // const resultUpdateEmail = await updateEmail(newEmail)
-        // setLoading(false)
+        const resultUpdatePassword = await updatePassword(newPassword)
+        setLoading(false)
 
-        // if(!resultUpdateEmail.statusResponse){
-        //     setErrorEmail("No se puede cambiar por este correo, ya está en uso por otro usuario.")
-        //     return
-        // }
+        if(!resultUpdatePassword.statusResponse){
+            setNewPassword("Hubo un problema cambiando la contraseña, por favor intente más tarde.")
+            return
+        }
 
-        // setReloadUser(true)
-        // toastRef.current.show("Se ha actualizado el email", 3000)
-        // setShowModal(false)
+        toastRef.current.show("Se ha actualizado la contraseña", 3000)
+        setShowModal(false)
     }
 
     const validateForm = () => {

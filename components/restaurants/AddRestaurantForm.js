@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { StyleSheet, ScrollView, View, Alert, Dimensions } from 'react-native'
+import { StyleSheet, ScrollView, View, Alert, Dimensions, Text } from 'react-native'
 import { Avatar, Button, Icon, Input, Image } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
 import { map, size, filter } from 'lodash'
 
 import { loadImageFromGallery } from '../../utils/helpers'
+import Modal from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
 
@@ -16,6 +17,8 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
     const [errorAddress, setErrorAddress] = useState(null)
     const [errorPhone, setErrorPhone] = useState(null)
     const [imagesSelected, setImagesSelected] = useState([])
+    const [isVisibleMap, setIsVisibleMap] = useState(false)
+    const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const AddRestaurant = () => {
         console.log(formData)
@@ -34,6 +37,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
                 errorEmail={errorEmail}
                 errorAddress={errorAddress}
                 errorPhone={errorPhone}
+                setIsVisibleMap={setIsVisibleMap}
             />
             <UploadImage
                 toastRef={toastRef}
@@ -45,7 +49,21 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
                 onPress={AddRestaurant}
                 buttonStyle={styles.btnAddRestaurant}
             />
+            <MapRestaurant
+                isVisibleMap={isVisibleMap}
+                setIsVisibleMap={setIsVisibleMap}
+                setLocationRestaurant={setLocationRestaurant}
+                toastRef={toastRef}
+            />
         </ScrollView>
+    )
+}
+
+function MapRestaurant({ isVisibleMap, setIsVisibleMap, setLocationRestaurant, toastRef }){
+    return(
+        <Modal isVisible={isVisibleMap} setIsVisible={setIsVisibleMap}>
+            <Text>Map goes here</Text>
+        </Modal>
     )
 }
 
@@ -128,7 +146,7 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
     )
 }
 
-function FormAdd({ formData, setFormData, errorName, errorDescription, errorEmail, errorAddress, errorPhone}) {
+function FormAdd({ formData, setFormData, errorName, errorDescription, errorEmail, errorAddress, errorPhone, setIsVisibleMap}) {
     const [country, setCountry] = useState("CO")
     const [callingCode, setCallingCode] = useState("57")
     const [phone, setPhone] = useState("")
@@ -150,6 +168,12 @@ function FormAdd({ formData, setFormData, errorName, errorDescription, errorEmai
                 defaultValue={formData.address}
                 onChange={(e) => onChange(e, "address")}
                 errorMessage={errorAddress}
+                rightIcon={{
+                    type:"material-community",
+                    name:"google-maps",
+                    color:"#c2c2c2",
+                    onPress: () => setIsVisibleMap(true)
+                }}
             />
             <Input
                 placeholder="Email del restaurante..."

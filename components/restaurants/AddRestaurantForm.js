@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { StyleSheet, ScrollView, View } from 'react-native'
+import { StyleSheet, ScrollView, View, Alert } from 'react-native'
 import { Avatar, Button, Icon, Input } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
-import { map, size } from 'lodash'
+import { map, size, filter } from 'lodash'
+
 import { loadImageFromGallery } from '../../utils/helpers'
 
 export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
@@ -26,6 +27,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
                 errorName={errorName}
                 errorDescription={errorDescription}
                 errorEmail={errorEmail}
+                errorAddress={errorAddress}
                 errorPhone={errorPhone}
             />
             <UploadImage
@@ -51,6 +53,30 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
         setImagesSelected([...imagesSelected, response.image])
     }
     
+    const removeImage = (image) => {
+        Alert.alert(
+            "Eliminar imagen",
+            "¿Estás seguro que quieres eliminar la imagen?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Sí",
+                    onPress: () => {
+                        setImagesSelected(
+                            filter(imagesSelected, (imageUrl) => imageUrl !== image)
+                        )
+                    }
+                }
+            ],
+            {
+                cancelable: true
+            }
+        )
+    }
+
     return(
         <ScrollView
             horizontal
@@ -73,6 +99,7 @@ function UploadImage({ toastRef, imagesSelected, setImagesSelected }) {
                         key={index}
                         style={styles.miniatureStyle}
                         source={{ uri: imageRestaurant}}
+                        onPress={() => removeImage(imageRestaurant)}
                     />
                 )) 
             }

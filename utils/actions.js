@@ -108,3 +108,14 @@ export const updatePassword = async(password) => {
     }
     return result 
 }
+
+export const addDocumentWithoutId = async(colletion, data) => {
+    const result = { statusResponse : true, error: null}
+    try {
+        await db.collection(colletion).add(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result 
+}

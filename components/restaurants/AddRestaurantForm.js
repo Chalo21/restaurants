@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, ScrollView, View, Alert, Dimensions, Text } from 'react-native'
 import { Avatar, Button, Icon, Input, Image } from 'react-native-elements'
 import CountryPicker from 'react-native-country-picker-modal'
-import { map, size, filter } from 'lodash'
+import { map, size, filter, isEmpty } from 'lodash'
 import MapView from 'react-native-maps'
 
-import { getCurrentLocation, loadImageFromGallery } from '../../utils/helpers'
+import { getCurrentLocation, loadImageFromGallery, validateEmail } from '../../utils/helpers'
 import Modal from '../../components/Modal'
 
 const widthScreen = Dimensions.get("window").width
@@ -22,9 +22,60 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
     const [locationRestaurant, setLocationRestaurant] = useState(null)
 
     const AddRestaurant = () => {
-        console.log(formData)
+        if(!validForm()){
+            return
+        }
         console.log("Meloooooooooo")
     }
+
+    const validForm = () => {
+        clearErrors()
+        let isValid = true
+
+        if(isEmpty(formData.name)){
+            setErrorName("Debes ingresar el nombre del restaurante.")
+            isValid=false
+        }
+
+        if(isEmpty(formData.address)){
+            setErrorAddress("Debes ingresar la dirección del restaurante.")
+            isValid=false
+        }
+
+        if(size(formData.phone) < 10){
+            setErrorPhone("Debes ingresar el teléfono del restaurante.")
+            isValid=false
+        }
+
+        if(!validateEmail(formData.email)){
+            setErrorEmail("Debes ingresar el email de restaurante válido.")
+            isValid=false
+        }
+
+        if(isEmpty(formData.description)){
+            setErrorDescription("Debes ingresar una descripción del restaurante.")
+            isValid=false
+        }
+
+        if(!locationRestaurant) {
+            toastRef.current.show("Debes de localizar el restaurante en el mapa.", 3000)
+            isValid=false
+        } else if(size(imagesSelected) === 0) {
+            toastRef.current.show("Debes agregar al menos una imagen al restaurante.", 3000)
+            isValid=false
+        }
+
+        return isValid
+    }
+
+    const clearErrors = () => {
+        setErrorDescription(null)
+        setErrorEmail(null)
+        setErrorAddress(null)
+        setErrorName(null)
+        setErrorPhone(null)
+    }
+
     return (
         <ScrollView style={styles.viewContainer}>
             <ImageRestaurant
@@ -54,7 +105,6 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
             <MapRestaurant
                 isVisibleMap={isVisibleMap}
                 setIsVisibleMap={setIsVisibleMap}
-                locationRestaurant={locationRestaurant}
                 setLocationRestaurant={setLocationRestaurant}
                 toastRef={toastRef}
             />
@@ -62,7 +112,7 @@ export default function AddRestaurantForm({ toastRef, setLoading, navigation}) {
     )
 }
 
-function MapRestaurant({ isVisibleMap, setIsVisibleMap, locationRestaurant, setLocationRestaurant, toastRef }){
+function MapRestaurant({ isVisibleMap, setIsVisibleMap,  setLocationRestaurant, toastRef }){
     const [newRegion, setNewRegion] = useState(null)
 
     useEffect(() => {
@@ -245,6 +295,8 @@ function FormAdd({ formData, setFormData, errorName, errorDescription, errorEmai
                     countryCode={country}
                     onSelect={(country) => {
                         setFormData({...formData, "country": country.cca2, "callingCode": country.callingCode[0]})
+                        setCountry(country.cca2)
+                        setCallingCode(country.callingCode[0])
                     }}
                 />
                 <Input

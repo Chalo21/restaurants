@@ -119,3 +119,21 @@ export const addDocumentWithoutId = async(colletion, data) => {
     }
     return result 
 }
+
+export const getRestaurants = async(limitRestaurants) => {
+    const result = { statusResponse : true, error: null, restaurants: [], startRestaurants: null}
+    try {
+        const response = await db.collection("restaurants").orderBy("createAt", "desc").limit(limitRestaurants).get()
+        if(response.docs.length > 0){
+            result.startRestaurants = response.docs[response.docs.length-1]
+        }
+        response.forEach(doc => {
+            const restaurant = doc.data()
+            result.restaurants.push(restaurant)
+        });
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result 
+}

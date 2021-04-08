@@ -3,12 +3,14 @@ import { Image } from 'react-native-elements'
 import { ActivityIndicator, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native'
 import { size } from 'lodash'
 
-export default function ListRestaurants({ restaurants, navigation }) {
+export default function ListRestaurants({ restaurants, navigation, handleLoadMore }) {
     return (
         <View>
             <FlatList
                 data={restaurants}
                 keyExtractor={(item, index) => index.toString()}
+                onEndReachedThreshold={0.5}
+                onEndReached={handleLoadMore}
                 renderItem={(restaurant) => (
                     <Restaurant restaurant={restaurant} navigation={navigation}/>
                 )}

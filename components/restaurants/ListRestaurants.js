@@ -3,6 +3,8 @@ import { Image } from 'react-native-elements'
 import { ActivityIndicator, TouchableOpacity, FlatList, StyleSheet, Text, View } from 'react-native'
 import { size } from 'lodash'
 
+import { formatPhone } from '../../utils/helpers'
+
 export default function ListRestaurants({ restaurants, navigation, handleLoadMore }) {
     return (
         <View>
@@ -37,7 +39,7 @@ function Restaurant({ restaurant, navigation }){
                 <View>
                     <Text style={styles.restaurantName}>{name}</Text>
                     <Text style={styles.restaurantInformation}>{address}</Text>
-                    <Text style={styles.restaurantInformation}>{callingCode}-{phone}</Text>
+                    <Text style={styles.restaurantInformation}>{formatPhone(callingCode, phone)}</Text>
                     <Text style={styles.restaurantDescription}>
                         {
                             size(description) > 60

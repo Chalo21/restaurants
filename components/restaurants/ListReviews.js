@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import firebase from 'firebase/app'
 import { Button } from 'react-native-elements'
+import Restaurant from '../../screens/restaurants/Restaurant'
 
 export default function ListReviews({navigation, idRestaurant}) {
     const [userLogged, setUserLogged] = useState(false)
@@ -17,6 +18,7 @@ export default function ListReviews({navigation, idRestaurant}) {
                         buttonStyle={styles.btnAddReview}
                         title="Escribe una opinión"
                         titleStyle={styles.btnTitleAddReview}
+                        onPress={() => navigation.navigate("add-review-restaurant", { idRestaurant })}
                         icon={{
                             type: "material-community",
                             name: "square-edit-outline",

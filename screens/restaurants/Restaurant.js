@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Alert, StyleSheet, Text, View } from 'react-native'
+import { Alert, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 
+import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import { getDocumentById } from '../../utils/actions'
+
+const widthScreen=Dimensions.get("window").width
 
 export default function Restaurant({navigation, route}) {
     const { id, name } = route.params
@@ -26,10 +29,19 @@ export default function Restaurant({navigation, route}) {
         return <Loading isVisible={true} text="Cargando..."/>
     }
     return (
-        <View>
+        <ScrollView style={styles.viewBody}>
+            <CarouselImage
+                images={restaurant.images}
+                height={250}
+                width={widthScreen}
+            />
             <Text>{restaurant.description}</Text>
-        </View>
+        </ScrollView>
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    viewBody : {
+        flex: 1
+    }
+})

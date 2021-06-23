@@ -179,3 +179,14 @@ export const getDocumentById = async(colletion, id) => {
     }
     return result 
 }
+
+export const updateDocumentById = async(colletion, id, data) => {
+    const result = { statusResponse : true, error: null}
+    try {
+        await db.collection(colletion).doc(id).update(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result 
+}

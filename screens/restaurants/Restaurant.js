@@ -17,8 +17,6 @@ export default function Restaurant({navigation, route}) {
     const { id, name } = route.params
     const [restaurant, setRestaurant] = useState(null)
     const [activeSlide, setActiveSlide] = useState([0])
-
-    console.log(restaurant)
     
     navigation.setOptions({title: name})
 

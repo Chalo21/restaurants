@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     },
     titleRating : {
         flexDirection: "row",
-        marginTop: 10,
+        marginVertical: 10,
         justifyContent: "space-between"
     }
 })

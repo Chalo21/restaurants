@@ -10,8 +10,6 @@ export default function TopRestaurants({ navigation }) {
     const [restaurants, setRestaurants] = useState(null)
     const [loading, setLoading] = useState(false)
 
-    console.log(restaurants)
-
     useFocusEffect(
         useCallback(() => {
             async function getData(){

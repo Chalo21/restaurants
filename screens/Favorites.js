@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { Button, Icon } from 'react-native-elements'
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Button, Icon, Image } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native'
 import Toast from 'react-native-easy-toast'
 import firebase, { functions } from 'firebase/app'
@@ -44,10 +44,42 @@ export default function Favorites({ navigation }) {
         return <NotFoundRestaurants/>
     }
     return (
-        <View>
-            <Text>Favorites</Text>
+        <View style={styles.viewBody}>
+            {
+                restaurants ? (
+                    <FlatList
+                        data={restaurants}
+                        keyExtractor={(item, index) => index.toString()}
+                        renderItem={(restaurant) => (
+                            <Restaurant
+                                restaurant={restaurant}
+                                setLoading={setLoading}
+                                toastRef={toastRef}
+                                navigation={navigation}
+                            />
+                        )}
+                    />
+                ) : (
+                    <View style={styles.loaderRestaurant}>
+                        <ActivityIndicator size="large"/>
+                        <Text style={{textAlign: "center"}}>
+                            Cargando Restaurantes...
+                        </Text>
+                    </View>
+                )
+            }
             <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text={"Por favor espere..."}/>
+        </View>
+    )
+}
+
+function Restaurant({ restaurant, setLoading, toastRef, navigation}) {
+    const { id, name, image } = restaurant.item
+    console.log("Vemeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+    return (
+        <View>
+            <Text>{name}</Text>
         </View>
     )
 }
@@ -78,4 +110,12 @@ function UserNoLogged({ navigation }) {
     )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    viewBody : {
+        flex: 1,
+        backgroundColor: "#f2f2f2",
+    },
+    loaderRestaurant : {
+        marginVertical: 10
+    }
+})

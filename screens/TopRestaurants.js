@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 
-import { getTopRestauranta } from '../utils/actions'
+import { getTopRestaurants } from '../utils/actions'
 import Loading from '../components/Loading'
 import ListTopRestaurants from '../components/ranking/ListTopRestaurants'
 
@@ -14,7 +14,7 @@ export default function TopRestaurants({ navigation }) {
         useCallback(() => {
             async function getData(){
                 setLoading(true)
-                const response = await getTopRestauranta(10)
+                const response = await getTopRestaurants(10)
                 if(response.statusResponse){
                     setRestaurants(response.restaurants)
                 }

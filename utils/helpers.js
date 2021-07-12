@@ -57,7 +57,7 @@ export const formatPhone = (callingCode, phone) => {
 }
 
 export const callNumber = (phoneNumber) => {
-    Linking.openURL(`tel:&{phoneNumber}`)
+    Linking.openURL(`tel:${phoneNumber}`)
 }
 
 export const sendWhatsApp = (phoneNumber, text) => {
@@ -69,4 +69,8 @@ export const sendWhatsApp = (phoneNumber, text) => {
         }
         Linking.openURL(link)
     })
+}
+
+export const sendEmail = (to, subject, body) => {
+    Linking.openURL(`mailto:${to}?subject=${subject}&body=${body}`)
 }

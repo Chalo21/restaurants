@@ -10,7 +10,7 @@ import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite } from '../../utils/actions'
-import { callNumber, formatPhone, sendEmail } from '../../utils/helpers'
+import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import ListReviews from '../../components/restaurants/ListReviews'
 
 const widthScreen=Dimensions.get("window").width
@@ -155,7 +155,13 @@ function RestaurantInfo({name, location, address, email, phone, currentUser}){
     }
 
     const actionRight = (type) => {
-        console.log("derecha ", type)
+        if (type == "phone") {
+            if(currentUser){
+                sendWhatsApp(phone, `Soy ${currentUser.displayName}, estoy interesado en sus servicios.`)
+            } else {
+                sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
+            }
+        }
     }
 
     return (

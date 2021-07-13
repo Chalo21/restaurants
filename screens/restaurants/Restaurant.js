@@ -9,7 +9,7 @@ import Toast from 'react-native-easy-toast'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite } from '../../utils/actions'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite, setNotificationMessage, sendPushNotification } from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import ListReviews from '../../components/restaurants/ListReviews'
 
@@ -123,6 +123,7 @@ export default function Restaurant({navigation, route}) {
                 email={restaurant.email}
                 phone={formatPhone(restaurant.callingCode,restaurant.phone)}
                 currentUser={currentUser}
+                setLoading={setLoading}
             />
             <ListReviews
                 navigation={navigation}
@@ -134,9 +135,9 @@ export default function Restaurant({navigation, route}) {
     )
 }
 
-function RestaurantInfo({name, location, address, email, phone, currentUser}){
+function RestaurantInfo({name, location, address, email, phone, currentUser, setLoading}){
     const listInfo = [
-        {type: "addres" ,text: address, iconLeft: "map-marker"},
+        {type: "addres" ,text: address, iconLeft: "map-marker", iconRight: "message-text-outline"},
         {type: "phone" ,text: phone, iconLeft: "phone", iconRight: "whatsapp"},
         {type: "email" ,text: email, iconLeft: "at"}
     ]
@@ -161,9 +162,35 @@ function RestaurantInfo({name, location, address, email, phone, currentUser}){
             } else {
                 sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
             }
+        } else if (type == "addres") {
+            sendNotification()
         }
     }
 
+    const sendNotification = async() => {
+        setLoading(true)
+        const resultToken = await getDocumentById("users", getCurrentUser().uid)
+        if(!resultToken.statusResponse){
+            setLoading(false)
+            Alert.alert("No se pudo obtener el token del usuario")
+        }
+        
+        const messageNotification = setNotificationMessage(
+            resultToken.document.token,
+            "Titulo de prueba",
+            "Mensaje de Prueba",
+            { data: "data de prueba" }
+            )
+            
+            const response = await sendPushNotification(messageNotification)
+            setLoading(false)
+            
+            if(response){
+                Alert.alert("Se ha enviado el mensaje.")
+            } else {  
+                Alert.alert("Ocurrio un problema enviando el mensaje.")
+            }
+    }
     return (
         <View style={styles.viewRestaurantInfo}>
             <Text style={styles.restaurantInfoTitle}>

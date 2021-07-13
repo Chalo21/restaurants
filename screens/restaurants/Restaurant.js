@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { map } from 'lodash'
+import { isEmpty, map } from 'lodash'
 import { Alert, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, Icon, Input, ListItem, Rating } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native'
@@ -9,7 +9,7 @@ import Toast from 'react-native-easy-toast'
 import CarouselImage from '../../components/CarouselImage'
 import Loading from '../../components/Loading'
 import MapRestaurant from '../../components/restaurants/MapRestaurant'
-import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite, setNotificationMessage, sendPushNotification } from '../../utils/actions'
+import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite, setNotificationMessage, sendPushNotification, getUsersFavorite } from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import ListReviews from '../../components/restaurants/ListReviews'
 import Modal from '../../components/Modal'
@@ -143,6 +143,7 @@ export default function Restaurant({navigation, route}) {
         </ScrollView>
     )
 }
+
 function SendMessage({modalNotification, setModalNotification, setLoading, restaurant}) {
     const [title, setTitle] = useState(null)
     const [errorTitle, setErrorTitle] = useState(null)
@@ -150,28 +151,53 @@ function SendMessage({modalNotification, setModalNotification, setLoading, resta
     const [errorMessage, setErrorMessage] = useState(null)
 
     const sendNotification = async() => {
-        setLoading(true)
-        const resultToken = await getDocumentById("users", getCurrentUser().uid)
-        if(!resultToken.statusResponse){
-            setLoading(false)
-            Alert.alert("No se pudo obtener el token del usuario")
+        if(!validForm()){
+            return
         }
+
+        setLoading(true)
         
-        const messageNotification = setNotificationMessage(
-            resultToken.document.token,
-            "Titulo de prueba",
-            "Mensaje de Prueba",
-            { data: "data de prueba" }
+        const userName = getCurrentUser().displayName ? getCurrentUser().displayName : "Anónimo" 
+        const theMessage = `${message}, del restaurante: ${restaurant.name}`
+        
+        const usersFavorites = await getUsersFavorite(restaurant.id)
+        if(!usersFavorites.statusResponse){
+            setLoading(false)
+            Alert.alert("Error al obtetener los usuarios que aman el restaurante.")
+            return
+        }
+
+        Promise.all(
+            map(usersFavorites.users, async(user) => {
+                const messageNotification = setNotificationMessage(
+                    user.token,
+                    `${userName}, dijo: ${title}`,
+                    theMessage,
+                    { data: theMessage }
+                )
+                await sendPushNotification(messageNotification)
+            })
         )
             
-        const response = await sendPushNotification(messageNotification)
         setLoading(false)
-        
-        if(response){
-            Alert.alert("Se ha enviado el mensaje.")
-        } else {  
-            Alert.alert("Ocurrio un problema enviando el mensaje.")
+        setTitle(null)
+        setMessage(null)
+        setModalNotification(false)
+    }
+
+    const validForm = () => {
+        let isValid = true
+        setErrorTitle("")
+        setErrorMessage("")
+        if(isEmpty(title)) {
+            setErrorTitle("Debes ingresar un título a tu mensaje.")
+            isValid = false
         }
+        if(isEmpty(message)) {
+            setErrorMessage("Debes ingresar un mensaje.")
+            isValid = false
+        }
+        return isValid
     }
     return (
         <Modal

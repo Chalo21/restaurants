@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { map } from 'lodash'
 import { Alert, Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Icon, ListItem, Rating } from 'react-native-elements'
+import { Button, Icon, Input, ListItem, Rating } from 'react-native-elements'
 import { useFocusEffect } from '@react-navigation/native'
 import firebase from 'firebase/app' 
 import Toast from 'react-native-easy-toast'
@@ -12,6 +12,7 @@ import MapRestaurant from '../../components/restaurants/MapRestaurant'
 import { addDocumentWithoutId, getCurrentUser, getDocumentById, getIsFavorite, deleteFavorite, setNotificationMessage, sendPushNotification } from '../../utils/actions'
 import { callNumber, formatPhone, sendEmail, sendWhatsApp } from '../../utils/helpers'
 import ListReviews from '../../components/restaurants/ListReviews'
+import Modal from '../../components/Modal'
 
 const widthScreen=Dimensions.get("window").width
 
@@ -25,6 +26,7 @@ export default function Restaurant({navigation, route}) {
     const [userLogged, setUserLogged] = useState(false)
     const [currentUser, setCurrentUser] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [modalNotification, setModalNotification] = useState(false)
 
     firebase.auth().onAuthStateChanged(user => {
         user ? setUserLogged(true) : setUserLogged(false)
@@ -124,18 +126,87 @@ export default function Restaurant({navigation, route}) {
                 phone={formatPhone(restaurant.callingCode,restaurant.phone)}
                 currentUser={currentUser}
                 setLoading={setLoading}
+                setModalNotification={setModalNotification}
             />
             <ListReviews
                 navigation={navigation}
                 idRestaurant={restaurant.id}
+            />
+            <SendMessage
+                modalNotification={modalNotification}
+                setModalNotification={setModalNotification}
+                setLoading={setLoading}
+                restaurant={restaurant}
             />
             <Toast ref={toastRef} position="center" opacity={0.9}/>
             <Loading isVisible={loading} text={"Por favor espere..."}/>
         </ScrollView>
     )
 }
+function SendMessage({modalNotification, setModalNotification, setLoading, restaurant}) {
+    const [title, setTitle] = useState(null)
+    const [errorTitle, setErrorTitle] = useState(null)
+    const [message, setMessage] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
-function RestaurantInfo({name, location, address, email, phone, currentUser, setLoading}){
+    const sendNotification = async() => {
+        setLoading(true)
+        const resultToken = await getDocumentById("users", getCurrentUser().uid)
+        if(!resultToken.statusResponse){
+            setLoading(false)
+            Alert.alert("No se pudo obtener el token del usuario")
+        }
+        
+        const messageNotification = setNotificationMessage(
+            resultToken.document.token,
+            "Titulo de prueba",
+            "Mensaje de Prueba",
+            { data: "data de prueba" }
+        )
+            
+        const response = await sendPushNotification(messageNotification)
+        setLoading(false)
+        
+        if(response){
+            Alert.alert("Se ha enviado el mensaje.")
+        } else {  
+            Alert.alert("Ocurrio un problema enviando el mensaje.")
+        }
+    }
+    return (
+        <Modal
+            isVisible={modalNotification}
+            setVisible={setModalNotification}
+        >
+            <View style={styles.modalContainer}>
+                <Text style={styles.textModal}>
+                    Enviale un mensaje a los amantes de {restaurant.name}
+                </Text>
+                <Input
+                    placeholder={"Titulo del mensaje..."}
+                    onChangeText={(text) => setTitle(text)}
+                    value={title}
+                    errorMessage={errorTitle}
+                />
+                <Input
+                    placeholder={"Mensaje..."}
+                    multiline
+                    inputStyle={styles.textArea}
+                    onChangeText={(text) => setMessage(text)}
+                    value={message}
+                    errorMessage={errorMessage}
+                />
+                <Button
+                    title="Enviar Mensaje"
+                    buttonStyle={styles.btnSend}
+                    containerStyle={styles.btnSendConatiner}
+                    onPress={sendNotification}
+                />
+            </View>
+        </Modal>
+    )
+}
+function RestaurantInfo({name, location, address, email, phone, currentUser, setLoading, setModalNotification}){
     const listInfo = [
         {type: "addres" ,text: address, iconLeft: "map-marker", iconRight: "message-text-outline"},
         {type: "phone" ,text: phone, iconLeft: "phone", iconRight: "whatsapp"},
@@ -163,34 +234,10 @@ function RestaurantInfo({name, location, address, email, phone, currentUser, set
                 sendWhatsApp(phone, `Estoy interesado en sus servicios.`)
             }
         } else if (type == "addres") {
-            sendNotification()
+            setModalNotification(true)
         }
     }
 
-    const sendNotification = async() => {
-        setLoading(true)
-        const resultToken = await getDocumentById("users", getCurrentUser().uid)
-        if(!resultToken.statusResponse){
-            setLoading(false)
-            Alert.alert("No se pudo obtener el token del usuario")
-        }
-        
-        const messageNotification = setNotificationMessage(
-            resultToken.document.token,
-            "Titulo de prueba",
-            "Mensaje de Prueba",
-            { data: "data de prueba" }
-            )
-            
-            const response = await sendPushNotification(messageNotification)
-            setLoading(false)
-            
-            if(response){
-                Alert.alert("Se ha enviado el mensaje.")
-            } else {  
-                Alert.alert("Ocurrio un problema enviando el mensaje.")
-            }
-    }
     return (
         <View style={styles.viewRestaurantInfo}>
             <Text style={styles.restaurantInfoTitle}>
@@ -296,5 +343,25 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 100,
         padding: 5,
         paddingLeft: 15
+    },
+    textArea : {
+        height: 50,
+        paddingHorizontal: 10
+    },
+    btnSend : {
+        backgroundColor: "#6d1a1a"
+    },
+    btnSendConatiner : {
+        width: "95%"
+    },
+    textModal : {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold"
+    },
+    modalContainer : {
+        justifyContent: "center",
+        alignItems: "center"
     }
+
 })

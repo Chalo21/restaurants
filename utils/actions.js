@@ -2,9 +2,13 @@ import { firebaseApp } from './firebase'
 import { FireSQL } from 'firesql'
 import * as firebase from 'firebase'
 import 'firebase/firestore'
+import * as Notifications from 'expo-notifications'
+import Constants from 'expo-constants' 
 
 import { fileToBlob } from './helpers'
 import { map } from 'lodash'
+import { Alert } from 'react-native'
+import { Platform } from 'react-native'
 
 const db = firebase.firestore(firebaseApp)
 const fireSQL = new FireSQL(firebase.firestore(), { includeId: "id" })
@@ -302,3 +306,46 @@ export const searchRestaurants = async(criteria) => {
     }
     return result 
 }
+
+export const getToken = async () => {
+    if(!Constants.isDevice) {
+        Alert.alert("Debes utilizar un dispositivo fisico para las notificaciones.")
+        return
+    }
+    
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+    if (finalStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync()
+        finalStatus = status
+    }
+    
+    if (finalStatus !== "granted") {
+        Alert.alert("Debes dar permiso para acceder a las notificaciones.")
+        return
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync()).data
+
+    if (Platform.OS == "android") {
+        Notifications.setNotificationChannelAsync("default", {
+            name: "default",
+            importance: Notifications.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: "#ff231f7c"
+        })
+    } 
+
+    return token
+}
+
+export const addDocumentWithId = async(colletion, data, doc) => {
+    const result = { statusResponse : true, error: null}
+    try {
+        await db.collection(colletion).doc(doc).set(data)
+    } catch (error) {
+        result.statusResponse = false
+        result.error = error
+    }
+    return result 
+}   

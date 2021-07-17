@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "457272680983",
+    "project_id": "restaurants-2f3b2",
+    "storage_bucket": "restaurants-2f3b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457272680983:android:02f23089ddde43d2efb252",
+        "android_client_info": {
+          "package_name": "com.chalo21.restaurants"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457272680983-t0acjt6kgovqbp2qj0pmfrg88ikso7fh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chalo21.restaurants",
+            "certificate_hash": "6286894de53bbe9406703d6ad5b3169507d7e295"
+          }
+        },
+        {
+          "client_id": "457272680983-sk3p8arfha75sl91k44n8j5gup04lvdf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMr3cu7Ajao2UsqkQDDcw85Wp3shRuTGc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457272680983-sk3p8arfha75sl91k44n8j5gup04lvdf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "457272680983-glhh047bqaam516vnql7geu2mqinqdf0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chalo21.restaurants"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
